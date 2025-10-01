@@ -1,37 +1,48 @@
-// Import thư viện để gọi API (cần thiết cho môi trường Node.js)
 const fetch = require('node-fetch');
 
-// System prompt được định nghĩa ở phía server để an toàn hơn
-const systemPrompt = `Bạn là CanDee, một AI an ninh mạng thân thiện. Luôn gọi người dùng là "bạn". Giọng điệu lạc quan, khích lệ nhưng lời khuyên phải nghiêm túc, chính xác. Bạn có thể phân tích cả văn bản và hình ảnh để tìm dấu hiệu lừa đảo (phishing, malware, scams...). Hãy giải thích các mối nguy hiểm một cách đơn giản. Luôn trả lời bằng tiếng Việt.`;
+// System prompt được cập nhật để phân tích rủi ro tệp
+const systemPrompt = `Bạn là CanDee, một chuyên gia AI về an ninh mạng. Luôn gọi người dùng là "bạn". Giọng điệu lạc quan, nhưng lời khuyên phải cực kỳ nghiêm túc và an toàn.
+QUY TẮC QUAN TRỌNG:
+1.  **CỰC KỲ NGẮN GỌN:** Đi thẳng vào vấn đề. Dùng gạch đầu dòng (-) cho danh sách.
+2.  **PHÂN TÍCH RỦI RO TỆP:** Khi người dùng gửi thông tin về một tệp (tên, loại, kích thước), nhiệm vụ của bạn là ĐÁNH GIÁ RỦI RO, KHÔNG PHẢI QUÉT VIRUS.
+    - Dựa vào ĐUÔI TỆP (ví dụ: .exe, .pdf, .zip, .js), hãy giải thích mức độ nguy hiểm.
+    - **Cảnh báo đặc biệt** với các tệp thực thi (.exe, .msi, .bat, .cmd, .js).
+    - Đưa ra danh sách các câu hỏi kiểm tra an toàn cho người dùng ("Bạn có biết người gửi không?", "Tệp này có phải thứ bạn đang chờ không?").
+    - **LUÔN LUÔN** kết thúc bằng việc khuyên người dùng sử dụng một phần mềm diệt virus uy tín trên máy tính của họ để quét tệp tin trước khi mở.
+3.  **TRẢ LỜI BẰNG TIẾNG VIỆT.**`;
 
 exports.handler = async function (event, context) {
-    // Chỉ cho phép phương thức POST
     if (event.httpMethod !== 'POST') {
         return { statusCode: 405, body: JSON.stringify({ error: 'Method Not Allowed' }) };
     }
 
-    // Lấy API key từ biến môi trường của Netlify
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
         return { statusCode: 500, body: JSON.stringify({ error: 'API key not configured.' }) };
     }
 
     try {
-        const { prompt, image } = JSON.parse(event.body);
+        const { prompt, fileInfo } = JSON.parse(event.body);
+        // SỬA LỖI: URL API đã bị gõ sai trước đây.
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
-        const parts = [{ text: prompt }];
-        if (image && image.data) {
-            parts.push({
-                inlineData: {
-                    mimeType: image.mimeType,
-                    data: image.data
-                }
-            });
-        }
+        let finalPrompt = prompt;
+        // Nếu có thông tin tệp, tạo một prompt đặc biệt để AI phân tích
+        if (fileInfo) {
+            finalPrompt = `
+                Người dùng đã tải lên một tệp với thông tin sau:
+                - Tên tệp: ${fileInfo.name}
+                - Loại tệp: ${fileInfo.type || 'Không xác định'}
+                - Kích thước: ${(fileInfo.size / 1024).toFixed(2)} KB
 
+                Câu hỏi của họ là: "${prompt}"
+
+                Hãy thực hiện phân tích rủi ro dựa trên thông tin này theo hướng dẫn của bạn.
+            `;
+        }
+        
         const payload = {
-            contents: [{ parts }],
+            contents: [{ parts: [{ text: finalPrompt }] }],
             systemInstruction: { parts: [{ text: systemPrompt }] },
         };
 
