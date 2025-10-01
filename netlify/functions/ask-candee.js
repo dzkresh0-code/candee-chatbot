@@ -10,7 +10,7 @@ exports.handler = async function (event, context) {
         return { statusCode: 405, body: JSON.stringify({ error: 'Method Not Allowed' }) };
     }
 
-    // Lấy API key từ biến môi trường của Netlify (sẽ cài đặt ở Bước 3)
+    // Lấy API key từ biến môi trường của Netlify
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
         return { statusCode: 500, body: JSON.stringify({ error: 'API key not configured.' }) };
