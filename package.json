@@ -1,0 +1,8 @@
+{
+  "name": "secure-candee-chatbot",
+  "version": "1.0.0",
+  "description": "Secure Netlify backend for CanDee Chatbot",
+  "dependencies": {
+    "node-fetch": "^2.6.7"
+  }
+}
