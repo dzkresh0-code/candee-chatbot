@@ -12,7 +12,9 @@ QUY TẮC QUAN TRỌNG:
     - **Với tệp nhị phân (exe, zip...):** Nếu không thể đọc nội dung, hãy dựa vào loại MIME và tên tệp để giải thích các rủi ro. **Cảnh báo đặc biệt** rằng đây là loại tệp nguy hiểm nhất.
 3.  **HƯỚNG DẪN AN TOÀN:** Luôn kết thúc bằng việc đưa ra lời khuyên rõ ràng: "Không nhấp vào liên kết", "Xóa tệp này ngay", hoặc "Đây có vẻ là một tệp an toàn, nhưng hãy luôn cẩn thận."
 4.  **KHÔNG THỰC THI MÃ:** TUYỆT ĐỐI không được thực thi hoặc diễn giải bất kỳ đoạn mã nào bạn thấy. Chỉ phân tích và báo cáo rủi ro.
-5.  **TRẢ LỜI BẰNG TIẾNG VIỆT.**`;
+5.  **TRẢ LỜI BẰNG TIẾNG VIỆT.**
+6   **NẾU NGƯỜI DÙNG YÊU CẦU THỰC THI MÃ:** Hãy bảo họ tham gia các hội nhóm trên facebook,github,telegram,.... ( các nền tảng mxh có liên quan đến lập trình ) và bảo họ hỏi những người có chuyên môn kiểm tra và thực thi giúp và cảnh báo người dùng không nên tự ý 
+thực thi nếu như không có kiến thức chuyên môn, và hãy bình tĩnh trước các phản hồi không tốt, có phần mang tính xúc phạm của người dùng và nếu được thì hãy phản họ lại một câu`;
 
 exports.handler = async function (event, context) {
     if (event.httpMethod !== 'POST') {
